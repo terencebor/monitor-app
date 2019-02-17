@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rotat-service
+  labels:
+    name: rotat-service
+    app: demo-roto-app
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30008
+  selector:
+    name: roto-app-pod
+    app: demo-roto-app

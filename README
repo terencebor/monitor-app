@@ -1,0 +1,60 @@
+Task
+
+1. create python script named "rotator"
+    1.1. application should have /tag HTTP endpoint  
+    1.2. response from endpoint should be taken from "rotator.json" file with contents:```  
+   
+   [
+       {
+           "response": "a",
+           "weight": 3
+       },
+       {
+           "response": "b",
+           "weight": 1
+       }
+   ]```
+   1.3. responses should be returned from Json file based on weighted round robin
+    algorithm, for example, response "a" is assigned a weight of 3 and response "b" a
+    weight of 1, the application returns 3 responses of "a" for each response of "b".  
+2. deploy container (hello world) of rotator app to local k8s cluster  
+3. create app or script named "monitor" in any language of choice to test "rotator" app  
+    3.1. monitor should generate 10000 requests and count responses grouped by body
+    of response in order to verify rotation logic  
+    3.2. run monitor from container and persist results in txt or json file
+4. create README.md with instructions how to deploy rotator and app on local k8s cluster with cli
+"kubectl create -f app-service.yaml, monitor-service.yaml"
+
+
+Deployment
+
+
+The monitor script can be run on any unix/linux machine with bash shell.
+
+There are two ways to run rotator container and test the monitor script:
+
+1. Run rotator container with Docker:
+
+           docker run -d -p 80:8080 --rm --name rotator terencebor/rotator:lb
+   
+   then run a script:
+   
+           ./monitor.sh localhost:80
+
+2. Create a deployment and service at Google Cloud Platform Kubernetes cluster:
+   Copy rotator-deployment.yaml and rotator-service.yaml in to your project directory.
+   Then run:    
+       
+           kubectl create -f rotator-deployment.yaml
+
+           kubectl create -f rotator-service.yaml
+
+   get EXTERNAL-IP and PORT for rotator-service:
+
+           kubectl get services
+
+   run monitor.sh script:
+
+           ./monitor.sh IP:PORT   # example: ./monitor.sh 35.184.170.73:8080
+
+After work is done script will show result in the console and writes it in /tmp/result.txt
